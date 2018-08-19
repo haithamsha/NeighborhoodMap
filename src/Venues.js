@@ -12,18 +12,27 @@ class Venues extends Component {
         }
     }
 
+    state = {
+        venues: [],
+        filteredVenues: [],
+        venuesErr: false ,
+        query: ''
+    }
+
     GetVenesByName(query) {
         this.setState({
             query: query
         })
 
         const filteredVenues = this.state.venues.filter((ven) => {
-            var match = ven.name.toLowerCase().indexOf(query) > -1;
+            var match = ven.name.toLowerCase().indexOf(query.toLowerCase()) > -1;
+            console.log(match);
             ven.marker.setVisible(match);
             return match;
         });
         this.setState({
-            filteredVenues
+            filteredVenues,
+            venuesErr: false
         });
         // add markers 
         this.addMarkers(filteredVenues);
@@ -38,7 +47,7 @@ class Venues extends Component {
                 venuesErr: false
             });
             // add markers 
-            this.addMarkers(data);
+            if(data) this.addMarkers(data);
         })
         .catch(err => {
             this.setState(
@@ -49,39 +58,51 @@ class Venues extends Component {
         })
     }
 
-    addMarkers(locations) {
-        console.log()
-        var markers = [];
-        // for (var i = 0; i < markers.length; i++) {
-        //     markers[i].setMap(null);
-        // }
-        const bounds = this.props.bounds;
-        locations.forEach((ven) => {
+    addMarkers(locations){
+       
+        const { map, bounds, infoWindow } = this.props;
+        const self = this;
+        
+
+        // the problem from here.
+        locations.map((ven) => {
+            console.log('repeat!');
             const position = {
                 lat : ven.location.lat,
                 lng: ven.location.lng
             };
+            console.log(position);
 
             ven.marker = new window.google.maps.Marker({
                 position: position,
-                map: this.props.map,
+                map: map,
                 title: ven.name,
                 id: ven.id  
             });
-            markers.push(ven.marker);
-        })
+           // bounds.extend(position);
+            ven.marker.addListener('click', function() {
+                const marker = this;
+                marker.infoContent = `<div class='info-window'>
+                <h3>Bank info</h3>
+                ${ven.name}
+                </div>`;
+                infoWindow.setContent(marker.infoContent);
+                infoWindow.open(map, marker);
+            })
+        });
 
         // bounds all markers
-        for(var i = 0; i<markers.length; i++) {
-            markers[i].setMap(this.props.map);
-           if(bounds){
-            bounds.extend(markers[i].position);
-            markers[i].addListener('click', () => {
-                console.log(markers[i]);
-            });
-           } 
+        // for(var i = 0; i<markers.length; i++) {
+        //     //markers[i].setMap(this.props.map);
+        //    //if(bounds){
+        //        console.log(bounds);
+        //     bounds.extend(markers[i].position);
+        //     markers[i].addListener('click', () => {
+        //         console.log(markers[i]);
+        //     });
+        //    //} 
           
-        }
+        // }
         this.props.map.fitBounds(bounds);
 
 
@@ -100,7 +121,7 @@ class Venues extends Component {
                         }
                     </ul>
                 : 
-                <div className= "err">There is erro when load venues data.</div>
+                <div className= "err">There is error when load venues data.</div>
                 }
                 
             </div>
