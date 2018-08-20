@@ -12,6 +12,8 @@ class Venues extends Component {
             VenensdataStatus : 'Loading ............'
         }
     }
+
+    // Filter banks data method
     GetVenesByName(query) {
         this.setState({
             query: query
@@ -22,6 +24,8 @@ class Venues extends Component {
             ven.marker.setVisible(match);
             return match;
         });
+
+        // If there is no search result.
         if(filteredVenues.length == 0) {
             this.setState({
                 VenensdataStatus: 'There is no data matching your search.'
