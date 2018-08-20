@@ -6,19 +6,12 @@ class Venues extends Component {
         super(props);
         this.state = {
             venues: [],
-            filteredVenues: [],
-            venuesErr: false ,
-            query: ''
+            filteredVenues: {},
+            venuesErr: {} ,
+            query: '',
+            VenensdataStatus : 'Loading ............'
         }
     }
-
-    state = {
-        venues: [],
-        filteredVenues: [],
-        venuesErr: false ,
-        query: ''
-    }
-
     GetVenesByName(query) {
         this.setState({
             query: query
@@ -26,17 +19,17 @@ class Venues extends Component {
 
         const filteredVenues = this.state.venues.filter((ven) => {
             var match = ven.name.toLowerCase().indexOf(query.toLowerCase()) > -1;
-            console.log(match);
             ven.marker.setVisible(match);
             return match;
         });
+        if(filteredVenues.length == 0) {
+            this.setState({
+                VenensdataStatus: 'There is no data matching your search.'
+            })
+        }
         this.setState({
-            filteredVenues,
-            venuesErr: false
+            filteredVenues: filteredVenues,
         });
-        // add markers 
-        this.addMarkers(filteredVenues);
-        
     }
 
     componentDidMount() {
@@ -46,7 +39,12 @@ class Venues extends Component {
                 filteredVenues: data,
                 venuesErr: false
             });
-            // add markers 
+            if(data.length == 0) {
+                this.setState({
+                    VenensdataStatus: 'There is no data matching your search.'
+                })
+            }
+            // Invoke add markers function.
             if(data) this.addMarkers(data);
         })
         .catch(err => {
@@ -59,27 +57,23 @@ class Venues extends Component {
     }
 
     addMarkers(locations){
-       
         const { map, bounds, infoWindow } = this.props;
-        const self = this;
-        
-
-        // the problem from here.
-        locations.map((ven) => {
-            console.log('repeat!');
+        // Loop throw all the locations
+        locations.forEach((ven) => {
             const position = {
                 lat : ven.location.lat,
                 lng: ven.location.lng
             };
-            console.log(position);
 
+            // Add marker to each position.
             ven.marker = new window.google.maps.Marker({
                 position: position,
                 map: map,
                 title: ven.name,
                 id: ven.id  
             });
-           // bounds.extend(position);
+
+            // Add info window to each marker. 
             ven.marker.addListener('click', function() {
                 const marker = this;
                 marker.infoContent = `<div class='info-window'>
@@ -90,38 +84,23 @@ class Venues extends Component {
                 infoWindow.open(map, marker);
             })
         });
-
-        // bounds all markers
-        // for(var i = 0; i<markers.length; i++) {
-        //     //markers[i].setMap(this.props.map);
-        //    //if(bounds){
-        //        console.log(bounds);
-        //     bounds.extend(markers[i].position);
-        //     markers[i].addListener('click', () => {
-        //         console.log(markers[i]);
-        //     });
-        //    //} 
-          
-        // }
+        // fit markers to appear on the map.
         this.props.map.fitBounds(bounds);
-
-
     }
 
     render() {
         return (
             <div className="venues">
                 <input type="text" placeholder="Search" onChange = {(event) => this.GetVenesByName(event.target.value)}/>
-                {this.state.venuesErr && this.state.filteredVenues.length > 0 ?
-                    < ul >
+                    {this.state.filteredVenues.length > 0 ?  (
+                        < ul >
                         {
                             this.state.filteredVenues.map((ven) =>
                                 <li key={ven.id}>{ven.name}</li>
                             )
                         }
                     </ul>
-                : 
-                <div className= "err">There is error when load venues data.</div>
+                    ): <div className="result">{this.state.VenensdataStatus}</div>
                 }
                 
             </div>
