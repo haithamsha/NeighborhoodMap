@@ -21,7 +21,7 @@ header .logo {
 header .humb {
   background: #212121;
   padding: 0.3em 0 0 0.5em;
-  color: #4473A8;
+  color: rgb(114, 176, 247);
   font-size: 1.2em;
   cursor: pointer;
 }

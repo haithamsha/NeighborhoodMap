@@ -13,7 +13,7 @@ const categories = [
 export const getVenues = () => {
 // var venuesUl = document.getElementById("venues");
 
-var url =`https://api.foursquare.com/v2/venues/search?ll=${mapCenter.lat},${mapCenter.lng}&client_id=${client_id}&client_secret=${client_secret}&v=20180809&categoryId=${categories}&raduis=500&limit=200`;
+var url =`https://api.foursquare.com/v2/venues/search?ll=${mapCenter.lat},${mapCenter.lng}&client_id=${client_id}&client_secret=${client_secret}&v=20180809&categoryId=${categories}&raduis=200&limit=200`;
 
 return fetch(url)
     .then(function(response) {
