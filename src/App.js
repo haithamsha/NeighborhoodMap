@@ -26,6 +26,9 @@ class App extends Component {
                 zoom: 13
             });
 
+            console.log("window width: ", window.innerWidth);
+            console.log("map width", map);
+
             const bounds = new window.google.maps.LatLngBounds();
             const infoWindow = new window.google.maps.InfoWindow({maxWidth: 250});
             this.setState({

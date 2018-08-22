@@ -60,6 +60,10 @@ class Venues extends Component {
         })
     }
 
+    showMarker(place) {
+        console.log(place);
+        window.google.maps.event.trigger(place.marker, 'click');
+    }
     addMarkers(locations){
         const { map, bounds, infoWindow } = this.props;
         // Loop throw all the locations
@@ -100,7 +104,7 @@ class Venues extends Component {
                         < ul >
                         {
                             this.state.filteredVenues.map((ven) =>
-                                <li key={ven.id}>{ven.name}</li>
+                                <li key={ven.id} onClick={() => this.showMarker(ven)} >{ven.name}</li>
                             )
                         }
                     </ul>
