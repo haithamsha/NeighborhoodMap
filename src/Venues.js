@@ -54,7 +54,8 @@ class Venues extends Component {
         .catch(err => {
             this.setState(
                 {
-                    venuesErr: true
+                    venuesErr: true,
+                    VenensdataStatus : "Error when loading banks data."
                 }
             )
         })
@@ -104,7 +105,12 @@ class Venues extends Component {
                         < ul >
                         {
                             this.state.filteredVenues.map((ven) =>
-                                <li key={ven.id} onClick={() => this.showMarker(ven)} >{ven.name}</li>
+                                <li
+                                 tabIndex="0"
+                                 role="menuitem"
+                                 key={ven.id}
+                                 onClick={() => this.showMarker(ven)} >{ven.name}
+                                 </li>
                             )
                         }
                     </ul>
